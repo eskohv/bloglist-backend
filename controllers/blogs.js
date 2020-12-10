@@ -10,6 +10,11 @@ router.get('/', async (request, response) => {
     response.json(blogs)
 })
 
+router.get('/:id', async (request, response) => {
+    const blog = await Blog.findById(request.params.id)
+    response.json(blog)
+})
+
 router.delete('/:id', async (request, response) => {
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
@@ -41,6 +46,7 @@ router.post('/', async (request, response) => {
 
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
 
+    console.log(decodedToken)
     if (!request.token || !decodedToken.id) {
         return response.status(401).json({ error: 'token missing or invalid' })
     }
@@ -57,6 +63,8 @@ router.post('/', async (request, response) => {
 
     blog.user = user
     const savedBlog = await blog.save()
+    console.log('user: ', user)
+    console.log('blog :', blog)
 
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
